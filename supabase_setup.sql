@@ -13,6 +13,7 @@ end $$;
 
 alter table public.profiles add column if not exists account_code text;
 alter table public.profiles add column if not exists is_moderator boolean not null default false;
+alter table public.profiles add column if not exists is_banned boolean not null default false;
 
 do $$ begin
   create table if not exists public.attempts (
@@ -52,17 +53,19 @@ set account_code = public.generate_account_code()
 where account_code is null or account_code !~ '^\d{6}$';
 
 -- создаём или обновляем модератора
-insert into public.profiles (nickname, password_hash, avatar_data, account_code, is_moderator)
+insert into public.profiles (nickname, password_hash, avatar_data, account_code, is_moderator, is_banned)
 values (
   'rwdragon',
   '9c9109b3ee9008f84873e7ee235d2d9fd668971e25d7a2f8daa316a0459b3b3e',
   '',
   public.generate_account_code(),
-  true
+  true,
+  false
 )
 on conflict (nickname) do update
 set password_hash = excluded.password_hash,
     is_moderator = true,
+    is_banned = false,
     account_code = coalesce(public.profiles.account_code, excluded.account_code);
 
 alter table public.profiles enable row level security;
