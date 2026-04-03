@@ -1,6 +1,4 @@
 -- Запусти этот SQL целиком в Supabase SQL Editor.
--- Он создаст таблицы для аккаунтов и результатов.
-
 create table if not exists public.profiles (
   nickname text primary key,
   password_hash text not null unique,
@@ -33,32 +31,27 @@ drop policy if exists "attempts_select_all" on public.attempts;
 drop policy if exists "attempts_insert_all" on public.attempts;
 
 create policy "profiles_select_all"
-on public.profiles
-for select
-to anon, authenticated
+on public.profiles for select
+to anon
 using (true);
 
 create policy "profiles_insert_all"
-on public.profiles
-for insert
-to anon, authenticated
+on public.profiles for insert
+to anon
 with check (true);
 
 create policy "profiles_update_all"
-on public.profiles
-for update
-to anon, authenticated
+on public.profiles for update
+to anon
 using (true)
 with check (true);
 
 create policy "attempts_select_all"
-on public.attempts
-for select
-to anon, authenticated
+on public.attempts for select
+to anon
 using (true);
 
 create policy "attempts_insert_all"
-on public.attempts
-for insert
-to anon, authenticated
+on public.attempts for insert
+to anon
 with check (true);
