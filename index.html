@@ -1054,5 +1054,97 @@ window.addEventListener('load', () => {
 });
 </script>
 
+
+<script>
+window.addEventListener('load', () => {
+  try {
+    function safeText(el, value) { if (el) el.textContent = value; }
+    function safeHtml(el, value) { if (el) el.innerHTML = value; }
+
+    // Override renderProfileGame with a safe version that tolerates removed blocks like publicBest20
+    window.renderProfileGame = function(views, p, gameKey){
+      safeText(views.nick, p && p.accountCode ? `${p.nickname} · ID ${p.accountCode}` : ((p && p.nickname) || '—'));
+      if (views.avatar) {
+        if (p && p.avatar) views.avatar.innerHTML = `<img src="${p.avatar}" alt="avatar">`;
+        else views.avatar.textContent = '👤';
+      }
+      const attempts = (p && p.attemptsByGame && p.attemptsByGame[gameKey]) || [];
+
+      if (gameKey === 'math') {
+        const totals = (p && p.totalsByGame && p.totalsByGame.math) || {attempts:0,wrong:0,penalty:0,firstTry:0};
+        safeText(views.stat1Label, 'Всего ошибок');
+        safeText(views.stat2Label, 'Штрафных секунд');
+        safeText(views.stat3Label, 'С первого раза');
+        safeText(views.stat4Label, 'Всего попыток');
+        safeText(views.total1, totals.wrong || 0);
+        safeText(views.total2, totals.penalty || 0);
+        safeText(views.total3, totals.firstTry || 0);
+        safeText(views.total4, totals.attempts || 0);
+        safeText(views.bestLabel1, 'Лучшее 10');
+        safeText(views.bestLabel2, '');
+        safeText(views.bestLabel3, '');
+        safeText(views.bestLabel4, 'Лучшее общее');
+        if (typeof bestText === 'function') {
+          safeText(views.best1, bestText(p?.bestByGame?.math?.['10']));
+          safeText(views.best2, views.best2 ? bestText(p?.bestByGame?.math?.['15']) : '');
+          safeText(views.best3, views.best3 ? bestText(p?.bestByGame?.math?.['20']) : '');
+          safeText(views.best4, bestText(p?.bestByGame?.math?.['all']));
+        }
+        if (views.attempts && typeof attemptsHtml === 'function') views.attempts.innerHTML = attemptsHtml(attempts, 'math');
+      } else {
+        const totals = (p && p.totalsByGame && p.totalsByGame.skibidi) || {attempts:0,skibidiHits:0,cameraHits:0,poopHits:0};
+        safeText(views.stat1Label, 'Всего нажатий на скибиди');
+        safeText(views.stat2Label, 'Всего нажатий на камераменов');
+        safeText(views.stat3Label, 'Всего нажатий на какахи');
+        safeText(views.stat4Label, 'Всего попыток');
+        safeText(views.total1, totals.skibidiHits || 0);
+        safeText(views.total2, totals.cameraHits || 0);
+        safeText(views.total3, totals.poopHits || 0);
+        safeText(views.total4, totals.attempts || 0);
+        safeText(views.bestLabel1, 'Лучшее 10');
+        safeText(views.bestLabel2, '');
+        safeText(views.bestLabel3, 'Лучшее 30');
+        safeText(views.bestLabel4, 'Лучшее 67');
+        if (typeof bestText === 'function') {
+          safeText(views.best1, bestText(p?.bestByGame?.skibidi?.['10']));
+          safeText(views.best2, views.best2 ? bestText(p?.bestByGame?.skibidi?.['20']) : '');
+          safeText(views.best3, bestText(p?.bestByGame?.skibidi?.['30']));
+          safeText(views.best4, bestText(p?.bestByGame?.skibidi?.['67']));
+        }
+        if (views.attempts && typeof attemptsHtml === 'function') views.attempts.innerHTML = attemptsHtml(attempts, 'skibidi');
+      }
+    };
+
+    // Make back button in public profile reliable
+    const backBtn = document.getElementById('publicProfileBackBtn');
+    if (backBtn) {
+      backBtn.onclick = () => {
+        try {
+          if (typeof publicProfileReturnScreen !== 'undefined' && publicProfileReturnScreen === 'admin') {
+            if (typeof showScreen === 'function') showScreen('admin');
+            if (typeof loadAdminPanel === 'function') loadAdminPanel();
+          } else {
+            if (typeof showScreen === 'function') showScreen('leaderboard');
+            if (typeof fetchLeaderboard === 'function') fetchLeaderboard();
+          }
+        } catch (e) { console.error(e); }
+      };
+    }
+
+    // Make game tabs in public profile reliable
+    const publicTabs = document.getElementById('publicProfileGameTabs');
+    if (publicTabs) {
+      publicTabs.onclick = (e) => {
+        const b = e.target.closest('[data-game]');
+        if (!b) return;
+        if (typeof currentPublicProfileGame !== 'undefined') currentPublicProfileGame = b.dataset.game;
+        publicTabs.querySelectorAll('[data-game]').forEach(x => x.classList.toggle('active', x.dataset.game === b.dataset.game));
+        if (typeof loadPublicProfile === 'function' && typeof viewedNickname !== 'undefined') loadPublicProfile(viewedNickname);
+      };
+    }
+  } catch (e) { console.error(e); }
+});
+</script>
+
 </body></html>
 <script>window.addEventListener('load',()=>{try{if(typeof profileAdminBtn!=='undefined'&&profileAdminBtn){profileAdminBtn.onclick=()=>{showScreen('admin'); loadAdminPanel();};}}catch(e){console.error(e)}});</script>
