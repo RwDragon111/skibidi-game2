@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Ты скибиди?</title>
+<meta name="theme-color" content="#111827" />
+<style>
+:root{
+  --bg:#0b1120;
+  --bg2:#172033;
+  --panel:rgba(255,255,255,.08);
+  --panel-strong:rgba(255,255,255,.12);
+  --line:rgba(255,255,255,.14);
+  --text:#f5f7ff;
+  --muted:#c9d3ea;
+  --accent:#7c5cff;
+  --accent2:#4f46e5;
+  --good:#4ecb71;
+  --bad:#ff6b7a;
+  --gold:#f7b34d;
+  --brown:#8b5e3c;
+  --shadow:0 18px 45px rgba(0,0,0,.35);
+  --safe-top:max(16px, env(safe-area-inset-top));
+  --safe-bottom:max(16px, env(safe-area-inset-bottom));
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:radial-gradient(circle at 20% 20%, rgba(104,90,255,.18), transparent 28%), radial-gradient(circle at 80% 25%, rgba(255,183,77,.12), transparent 24%), linear-gradient(180deg,var(--bg),var(--bg2)); color:var(--text); font-family:Arial,Helvetica,sans-serif; min-height:100%}
+body{min-height:100vh}
+.hidden{display:none!important}
+.app{min-height:100vh; padding:calc(var(--safe-top) + 16px) 16px calc(var(--safe-bottom) + 20px); position:relative}
+.center-screen{min-height:calc(100vh - var(--safe-top) - var(--safe-bottom) - 36px); display:flex; align-items:center; justify-content:center}
+.card{
+  width:min(92vw, 680px);
+  background:rgba(255,255,255,.08);
+  border:1px solid var(--line);
+  border-radius:28px;
+  box-shadow:var(--shadow);
+  backdrop-filter: blur(14px);
+  padding:26px 18px;
+  text-align:center;
+}
+.card h1,.card h2{margin:0 0 14px; line-height:1.12}
+.card h1{font-size:clamp(34px, 8vw, 52px)}
+.card h2{font-size:clamp(28px, 7vw, 44px)}
+.muted{color:var(--muted)}
+.main-question{
+  background:linear-gradient(180deg,#a97143,var(--brown));
+  border:none;
+  color:#fff;
+  width:100%;
+  border-radius:24px;
+  padding:20px 18px;
+  font-size:clamp(28px,7vw,44px);
+  font-weight:900;
+  box-shadow:0 10px 22px rgba(139,94,60,.35);
+  margin-bottom:22px;
+}
+.row{display:flex; gap:12px; align-items:center; justify-content:center; flex-wrap:wrap}
+.btn{
+  border:none; border-radius:20px; padding:15px 24px; font-size:21px; font-weight:800;
+  color:#fff; cursor:pointer; box-shadow:0 10px 22px rgba(0,0,0,.2);
+}
+.btn:active{transform:scale(.98)}
+.btn-good{background:linear-gradient(180deg,#61d87d,var(--good))}
+.btn-bad{background:linear-gradient(180deg,#ff8da0,var(--bad))}
+.btn-accent{background:linear-gradient(180deg,#8e7bff,var(--accent))}
+.btn-muted{background:linear-gradient(180deg,#6b7695,#56627e)}
+.btn-gold{background:linear-gradient(180deg,#ffc86f,var(--gold)); color:#462700}
+.input{
+  width:100%; border-radius:22px; border:1px solid var(--line); background:rgba(255,255,255,.10);
+  color:var(--text); padding:18px 18px; font-size:22px; outline:none;
+}
+.input::placeholder{color:#b7bfd4}
+.stack{display:flex; flex-direction:column; gap:14px}
+.error{color:#ff9ea7; font-weight:800; min-height:28px}
+.note{font-size:14px; line-height:1.4; color:var(--muted)}
+.float-btn{
+  position:fixed; top:calc(var(--safe-top) + 12px); right:16px; z-index:120;
+  width:56px; height:56px; border-radius:18px; border:1px solid var(--line); background:rgba(14,21,38,.78); color:#fff;
+  font-size:26px; display:grid; place-items:center; box-shadow:var(--shadow); backdrop-filter:blur(10px)
+}
+.no-area{position:relative; min-height:180px}
+#introNo{position:absolute; left:58%; top:76px}
+#introYes{position:absolute; left:22%; top:76px}
+.flash67{position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:200; background:rgba(0,0,0,.42)}
+.flash67.show{display:flex}
+.flash67-box{width:min(68vw,260px); aspect-ratio:1; border-radius:30px; display:grid; place-items:center; font-size:clamp(72px,18vw,130px); background:#fff; color:var(--brown); font-weight:900; border:8px solid var(--brown)}
+.alarm-screen{cursor:pointer}
+.game-shell{max-width:1000px; margin:0 auto}
+.game-top{
+  display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+  padding-right:68px; margin-bottom:12px;
+}
+.stat-pill,.icon-btn{
+  min-height:58px; border-radius:20px; background:rgba(255,255,255,.08); border:1px solid var(--line);
+  box-shadow:var(--shadow); backdrop-filter:blur(8px);
+}
+.stat-pill{padding:10px 14px; min-width:104px; display:flex; flex-direction:column; justify-content:center; text-align:center; font-weight:800}
+.stat-pill small{display:block; color:var(--muted); font-weight:700; font-size:12px; margin-bottom:2px}
+.right-actions{margin-left:auto; display:flex; gap:10px; align-items:center}
+.icon-btn{
+  width:58px; display:grid; place-items:center; color:#fff; cursor:pointer; font-size:28px;
+}
+.icon-btn.gold{background:linear-gradient(180deg,#ffca6a,#f0a33b); color:#4a2a00}
+.icon-btn.blue{background:linear-gradient(180deg,#7eb6ff,#5d86ff)}
+.game-area{
+  position:relative; height:calc(100vh - var(--safe-top) - var(--safe-bottom) - 136px);
+  min-height:520px; overflow:hidden; border-radius:26px; border:1px solid var(--line);
+  background:radial-gradient(circle at 20% 20%, rgba(124,92,255,.16), transparent 22%), radial-gradient(circle at 78% 26%, rgba(247,179,77,.12), transparent 18%), linear-gradient(180deg,#12192a,#1d2640);
+}
+.instruction{
+  position:absolute; left:50%; top:34%; transform:translate(-50%,-50%); z-index:3;
+  background:rgba(11,17,32,.45); border:1px solid var(--line); border-radius:24px; padding:18px 22px; width:min(90%,340px);
+  text-align:center; font-size:clamp(20px,4.4vw,28px); font-weight:800; backdrop-filter:blur(8px)
+}
+.entity{
+  position:absolute; user-select:none; display:grid; place-items:center; cursor:pointer;
+  touch-action:manipulation; line-height:1;
+}
+.entity:focus{outline:none}
+.entity.skibidi{font-size:64px; width:74px; height:74px; filter:drop-shadow(0 8px 18px rgba(0,0,0,.35))}
+.entity.camera{font-size:58px; width:68px; height:68px; filter:drop-shadow(0 8px 18px rgba(0,0,0,.35))}
+.entity.poop{font-size:44px; width:54px; height:54px; filter:drop-shadow(0 8px 18px rgba(0,0,0,.35))}
+.overlay{
+  position:fixed; inset:0; z-index:150; background:rgba(6,10,22,.72); display:none; align-items:center; justify-content:center; padding:18px;
+}
+.overlay.show{display:flex}
+.modal{
+  width:min(96vw,720px); max-height:min(88vh, 900px); overflow:auto;
+  background:rgba(19,26,45,.96); border:1px solid var(--line); border-radius:28px; box-shadow:var(--shadow); padding:24px 18px;
+}
+.modal::-webkit-scrollbar{width:8px}
+.modal::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16); border-radius:999px}
+.close-line{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px}
+.close-x{background:none; color:#fff; border:none; font-size:34px; cursor:pointer}
+.tabs{display:flex; gap:8px; flex-wrap:wrap; margin:12px 0 16px}
+.tab{
+  border:none; color:#fff; background:rgba(255,255,255,.08); border:1px solid var(--line); border-radius:16px;
+  padding:12px 16px; font-size:18px; font-weight:800; cursor:pointer;
+}
+.tab.active{background:linear-gradient(180deg,#8e7bff,var(--accent))}
+.lb-list{display:flex; flex-direction:column; gap:10px}
+.lb-row{
+  display:grid; grid-template-columns:44px 1fr auto auto; gap:10px; align-items:center;
+  background:rgba(255,255,255,.06); border:1px solid var(--line); border-radius:18px; padding:12px; cursor:pointer;
+}
+.lb-row.current{border-color:#ffd36a; box-shadow:0 0 0 1px rgba(255,211,106,.28) inset}
+.avatar{
+  width:44px; height:44px; border-radius:50%; object-fit:cover; background:rgba(255,255,255,.08); display:grid; place-items:center; overflow:hidden; font-size:24px;
+}
+.mini{font-size:14px; color:var(--muted)}
+.name-strong{font-weight:900}
+.name-strong.current{color:#ffd36a}
+.grid2{display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px}
+.stat-card{
+  background:rgba(255,255,255,.07); border:1px solid var(--line); border-radius:20px; padding:14px;
+}
+.stat-card .big{font-size:clamp(24px,6vw,38px); font-weight:900; margin-top:8px}
+.table-wrap{overflow:auto; border-radius:20px; border:1px solid var(--line); margin-top:14px}
+table{width:100%; border-collapse:collapse; min-width:560px}
+th,td{padding:12px 10px; text-align:left}
+thead{background:rgba(0,0,0,.22)}
+tbody tr:nth-child(odd){background:rgba(255,255,255,.04)}
+.click-note{margin-top:8px; color:var(--muted); font-size:14px}
+.setup-code{
+  width:100%; min-height:220px; border-radius:18px; border:1px solid var(--line); background:rgba(255,255,255,.08); color:#fff; padding:14px; font-size:15px;
+}
+@media (max-width:640px){
+  .card{padding:22px 14px}
+  #introYes,#introNo{top:110px}
+  .game-top{gap:8px; padding-right:64px}
+  .stat-pill{min-width:84px; padding:8px 10px; min-height:52px; font-size:14px}
+  .icon-btn{width:52px; min-height:52px; font-size:24px}
+  .game-area{height:calc(100vh - var(--safe-top) - var(--safe-bottom) - 124px); min-height:480px}
+  .grid2{grid-template-columns:1fr}
+  .lb-row{grid-template-columns:38px 1fr; gap:8px}
+  .lb-row .time-cell,.lb-row .err-cell{grid-column:2}
+  .instruction{top:30%}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <button class="float-btn" id="fullscreenBtn" title="Полноэкранный режим">⛶</button>
+
+  <section id="screenIntro" class="center-screen">
+    <div class="card">
+      <button class="main-question">Ты скибиди?</button>
+      <div class="no-area" id="introArea">
+        <button class="btn btn-good" id="introYes">да</button>
+        <button class="btn btn-bad" id="introNo">нет</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="screenAccess" class="center-screen hidden">
+    <div class="card">
+      <div style="font-size:84px;margin-bottom:6px">❓</div>
+      <h2>введи пароль</h2>
+      <p class="muted" style="font-size:18px;line-height:1.45">Введи общий пароль или свой личный пароль, если аккаунт уже есть.</p>
+      <div class="stack">
+        <input class="input" id="accessInput" placeholder="введи пароль..." />
+        <div class="row">
+          <button class="btn btn-accent" id="accessCheck">проверить</button>
+          <button class="btn btn-muted" id="accessBack">назад</button>
+        </div>
+        <div class="error" id="accessError"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="screenAuth" class="center-screen hidden">
+    <div class="card">
+      <div style="font-size:82px;margin-bottom:8px">📝</div>
+      <h2>введи ник и пароль</h2>
+      <p class="muted" style="font-size:18px;line-height:1.55">Если ник новый, аккаунт создастся. Если такой ник уже есть — пароль должен совпадать. Пароль нужно запомнить: без него потом не войти.</p>
+      <div class="stack">
+        <input class="input" id="nickInput" placeholder="ник" maxlength="18" />
+        <input class="input" id="personalPasswordInput" placeholder="личный пароль" maxlength="60" />
+        <div class="row">
+          <button class="btn btn-good" id="authContinue">продолжить</button>
+          <button class="btn btn-muted" id="authBack">назад</button>
+        </div>
+        <div class="error" id="authError"></div>
+        <p class="note">Личный пароль должен быть уникальным. Если такой пароль уже использует другой игрок, зарегистрироваться не получится.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="screenAlarm" class="center-screen hidden alarm-screen">
+    <div class="card">
+      <div style="font-size:88px;margin-bottom:8px">📹</div>
+      <h2>Ты камерамен</h2>
+      <p class="muted">Тапни в любом месте, чтобы закрыть.</p>
+    </div>
+  </section>
+
+  <section id="screenMode" class="center-screen hidden">
+    <div class="card">
+      <h2>Начать игру</h2>
+      <p class="muted">Выбери, сколько раз нужно нажать на скибиди.</p>
+      <div class="row" style="margin-top:18px">
+        <button class="btn btn-accent modeBtn" data-mode="10">10</button>
+        <button class="btn btn-accent modeBtn" data-mode="20">20</button>
+        <button class="btn btn-accent modeBtn" data-mode="30">30</button>
+        <button class="btn btn-gold modeBtn" data-mode="67">67</button>
+      </div>
+      <div class="row" style="margin-top:16px">
+        <button class="btn btn-muted" id="openProfileFromMode">личный кабинет</button>
+        <button class="btn btn-gold" id="openLeaderboardFromMode">лидерборд</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="screenGame" class="hidden">
+    <div class="game-shell">
+      <div class="game-top">
+        <div class="stat-pill"><small>⏱ время</small><span id="statTime">0.0 с</span></div>
+        <div class="stat-pill"><small>🏁 прогресс</small><span id="statProgress">0/10</span></div>
+        <div class="stat-pill"><small>📹 ошибки</small><span id="statErrors">0</span></div>
+        <div class="right-actions">
+          <button class="icon-btn gold" id="leaderboardBtn" title="Лидерборд">🏆</button>
+          <button class="icon-btn blue" id="profileBtn" title="Личный кабинет">👤</button>
+        </div>
+      </div>
+      <div class="game-area" id="gameArea">
+        <div class="instruction" id="gameInstruction">Нажми на скибиди,<br>чтобы начать.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="flash67" id="flash67"><div class="flash67-box">67</div></div>
+
+  <div class="overlay" id="resultOverlay">
+    <div class="modal">
+      <div class="close-line">
+        <h2 id="resultTitle" style="margin:0">Ваш результат</h2>
+        <button class="close-x" data-close="resultOverlay">×</button>
+      </div>
+      <div class="grid2">
+        <div class="stat-card"><div class="mini">Время</div><div class="big" id="resultTime">0.0 с</div></div>
+        <div class="stat-card"><div class="mini">Ошибки</div><div class="big" id="resultErrors">0</div></div>
+        <div class="stat-card"><div class="mini">Нажатий на скибиди</div><div class="big" id="resultSkibidi">0</div></div>
+        <div class="stat-card"><div class="mini">Нажатий на какахи</div><div class="big" id="resultPoop">0</div></div>
+      </div>
+      <div class="row" style="margin-top:18px">
+        <button class="btn btn-good" id="playAgainBtn">начать заново</button>
+        <button class="btn btn-accent" id="pickModeBtn">выбрать другое количество</button>
+        <button class="btn btn-muted" id="goProfileBtn">личный кабинет</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="leaderboardOverlay">
+    <div class="modal">
+      <div class="close-line">
+        <div>
+          <h2 style="margin:0">Лидерборд</h2>
+          <div class="click-note">Нажми на любого участника, чтобы открыть его статистику.</div>
+        </div>
+        <button class="close-x" data-close="leaderboardOverlay">×</button>
+      </div>
+      <div class="tabs" id="leaderboardTabs"></div>
+      <div class="lb-list" id="leaderboardList"></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="profileOverlay">
+    <div class="modal">
+      <div class="close-line">
+        <h2 style="margin:0">Личный кабинет</h2>
+        <button class="close-x" data-close="profileOverlay">×</button>
+      </div>
+      <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin-bottom:14px">
+        <div class="avatar" id="profileAvatar" style="width:86px;height:86px;font-size:42px">👤</div>
+        <div>
+          <div class="mini">Ник</div>
+          <div style="font-size:32px;font-weight:900" id="profileNickname">—</div>
+        </div>
+      </div>
+      <div class="row" style="justify-content:flex-start; margin-bottom:10px">
+        <input type="file" id="avatarFileInput" accept="image/*" class="hidden" />
+        <button class="btn btn-muted" id="uploadAvatarBtn">📷 загрузить аватарку</button>
+      </div>
+      <div class="grid2" id="profileStatsGrid"></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Режим</th><th>Итог</th><th>Время</th><th>Ошибки</th><th>Дата</th></tr></thead>
+          <tbody id="profileAttemptsBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="publicProfileOverlay">
+    <div class="modal">
+      <div class="close-line">
+        <h2 style="margin:0">Статистика игрока</h2>
+        <button class="close-x" data-close="publicProfileOverlay">×</button>
+      </div>
+      <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin-bottom:14px">
+        <div class="avatar" id="publicAvatar" style="width:86px;height:86px;font-size:42px">👤</div>
+        <div>
+          <div class="mini">Ник</div>
+          <div style="font-size:32px;font-weight:900" id="publicNickname">—</div>
+        </div>
+      </div>
+      <div class="grid2" id="publicStatsGrid"></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Режим</th><th>Итог</th><th>Время</th><th>Ошибки</th><th>Дата</th></tr></thead>
+          <tbody id="publicAttemptsBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="setupOverlay">
+    <div class="modal">
+      <div class="close-line">
+        <h2 style="margin:0">Подключение Supabase</h2>
+      </div>
+      <p class="muted" style="line-height:1.55">Один раз вставь сюда <b>Project URL</b> и <b>anon public key</b> из Supabase. Они нужны браузерному клиенту Supabase для подключения. Никогда не вставляй сюда <b>service_role</b> key.</p>
+      <div class="stack">
+        <input class="input" id="supabaseUrlInput" placeholder="https://xxxx.supabase.co" />
+        <input class="input" id="supabaseKeyInput" placeholder="anon public key" />
+        <div class="row">
+          <button class="btn btn-good" id="saveSupabaseBtn">сохранить и проверить</button>
+        </div>
+        <div class="error" id="supabaseSetupError"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(() => {
+  const COMMON_PASSWORDS = ['я скибиди', 'яскибиди'];
+  const MODES = [10,20,30,67];
+  const SAFE_DISTANCE = 110;
+  const STORAGE_KEYS = {
+    supabaseUrl: 'skibidi_supabase_url',
+    supabaseAnon: 'skibidi_supabase_anon',
+    currentUser: 'skibidi_current_user_v1'
+  };
+
+  const screens = {
+    intro: document.getElementById('screenIntro'),
+    access: document.getElementById('screenAccess'),
+    auth: document.getElementById('screenAuth'),
+    alarm: document.getElementById('screenAlarm'),
+    mode: document.getElementById('screenMode'),
+    game: document.getElementById('screenGame')
+  };
+
+  const el = {
+    fullscreenBtn: document.getElementById('fullscreenBtn'),
+    introArea: document.getElementById('introArea'),
+    introYes: document.getElementById('introYes'),
+    introNo: document.getElementById('introNo'),
+    flash67: document.getElementById('flash67'),
+    accessInput: document.getElementById('accessInput'),
+    accessCheck: document.getElementById('accessCheck'),
+    accessBack: document.getElementById('accessBack'),
+    accessError: document.getElementById('accessError'),
+    authBack: document.getElementById('authBack'),
+    authContinue: document.getElementById('authContinue'),
+    authError: document.getElementById('authError'),
+    nickInput: document.getElementById('nickInput'),
+    personalPasswordInput: document.getElementById('personalPasswordInput'),
+    screenAlarm: document.getElementById('screenAlarm'),
+    gameArea: document.getElementById('gameArea'),
+    instruction: document.getElementById('gameInstruction'),
+    statTime: document.getElementById('statTime'),
+    statProgress: document.getElementById('statProgress'),
+    statErrors: document.getElementById('statErrors'),
+    leaderboardBtn: document.getElementById('leaderboardBtn'),
+    profileBtn: document.getElementById('profileBtn'),
+    leaderboardOverlay: document.getElementById('leaderboardOverlay'),
+    leaderboardTabs: document.getElementById('leaderboardTabs'),
+    leaderboardList: document.getElementById('leaderboardList'),
+    profileOverlay: document.getElementById('profileOverlay'),
+    publicProfileOverlay: document.getElementById('publicProfileOverlay'),
+    publicAvatar: document.getElementById('publicAvatar'),
+    publicNickname: document.getElementById('publicNickname'),
+    publicStatsGrid: document.getElementById('publicStatsGrid'),
+    publicAttemptsBody: document.getElementById('publicAttemptsBody'),
+    profileAvatar: document.getElementById('profileAvatar'),
+    profileNickname: document.getElementById('profileNickname'),
+    profileStatsGrid: document.getElementById('profileStatsGrid'),
+    profileAttemptsBody: document.getElementById('profileAttemptsBody'),
+    uploadAvatarBtn: document.getElementById('uploadAvatarBtn'),
+    avatarFileInput: document.getElementById('avatarFileInput'),
+    resultOverlay: document.getElementById('resultOverlay'),
+    resultTitle: document.getElementById('resultTitle'),
+    resultTime: document.getElementById('resultTime'),
+    resultErrors: document.getElementById('resultErrors'),
+    resultSkibidi: document.getElementById('resultSkibidi'),
+    resultPoop: document.getElementById('resultPoop'),
+    playAgainBtn: document.getElementById('playAgainBtn'),
+    pickModeBtn: document.getElementById('pickModeBtn'),
+    goProfileBtn: document.getElementById('goProfileBtn'),
+    openProfileFromMode: document.getElementById('openProfileFromMode'),
+    openLeaderboardFromMode: document.getElementById('openLeaderboardFromMode'),
+    setupOverlay: document.getElementById('setupOverlay'),
+    supabaseUrlInput: document.getElementById('supabaseUrlInput'),
+    supabaseKeyInput: document.getElementById('supabaseKeyInput'),
+    saveSupabaseBtn: document.getElementById('saveSupabaseBtn'),
+    supabaseSetupError: document.getElementById('supabaseSetupError')
+  };
+
+  const state = {
+    introTeleports: 0,
+    accessFails: 0,
+    currentMode: 10,
+    currentUser: loadCurrentUser(),
+    supabase: null,
+    timerMs: 0,
+    timerId: null,
+    running: false,
+    hits: 0,
+    cameraHits: 0,
+    poopHits: 0,
+    poopVisible: false,
+    entities: { skibidi:null, cameras:[], poop:null },
+    lastSpawn: null,
+    audioCtx: null,
+    pausedAudio: null,
+    leaderboardMode: 10
+  };
+
+  function loadCurrentUser(){
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.currentUser) || 'null'); } catch { return null; }
+  }
+  function saveCurrentUser(){
+    localStorage.setItem(STORAGE_KEYS.currentUser, JSON.stringify(state.currentUser || null));
+  }
+  function normalizeNick(v){ return String(v||'').replace(/\s+/g,' ').trim().slice(0,18); }
+  function normalizePwd(v){ return String(v||'').trim().slice(0,60); }
+  function formatTime(sec){ return `${Number(sec).toFixed(1)} с`; }
+  function formatDate(value){
+    try { return new Date(value).toLocaleDateString('ru-RU'); } catch { return '—'; }
+  }
+  function escapeHtml(str){ return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])); }
+
+  async function sha256(text){
+    const data = new TextEncoder().encode(text);
+    const hash = await crypto.subtle.digest('SHA-256', data);
+    return [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+
+  async function initSupabase(){
+    const url = localStorage.getItem(STORAGE_KEYS.supabaseUrl) || '';
+    const key = localStorage.getItem(STORAGE_KEYS.supabaseAnon) || '';
+    if(!url || !key){ showSetup(); return false; }
+    try{
+      state.supabase = window.supabase.createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }});
+      const { error } = await state.supabase.from('profiles').select('nickname', { count: 'exact', head: true });
+      if(error) throw error;
+      return true;
+    }catch(err){
+      showSetup(`Не удалось подключиться: ${err.message || err}`);
+      return false;
+    }
+  }
+
+  function showSetup(message=''){
+    el.supabaseSetupError.textContent = message;
+    el.supabaseUrlInput.value = localStorage.getItem(STORAGE_KEYS.supabaseUrl) || '';
+    el.supabaseKeyInput.value = localStorage.getItem(STORAGE_KEYS.supabaseAnon) || '';
+    openOverlay(el.setupOverlay);
+  }
+
+  async function saveSetup(){
+    const url = el.supabaseUrlInput.value.trim();
+    const key = el.supabaseKeyInput.value.trim();
+    if(!url || !key){
+      el.supabaseSetupError.textContent = 'Вставь оба значения.';
+      return;
+    }
+    localStorage.setItem(STORAGE_KEYS.supabaseUrl, url);
+    localStorage.setItem(STORAGE_KEYS.supabaseAnon, key);
+    el.supabaseSetupError.textContent = 'Проверяю...';
+    const ok = await initSupabase();
+    if(ok){
+      el.supabaseSetupError.textContent = '';
+      closeOverlay(el.setupOverlay);
+    }
+  }
+
+  function switchScreen(name){
+    Object.values(screens).forEach(s => s.classList.add('hidden'));
+    screens[name].classList.remove('hidden');
+  }
+
+  function openOverlay(node){ node.classList.add('show'); }
+  function closeOverlay(node){ node.classList.remove('show'); }
+
+  function teleportIntroNo(){
+    const area = el.introArea.getBoundingClientRect();
+    const rect = el.introNo.getBoundingClientRect();
+    const maxX = Math.max(0, area.width - rect.width);
+    const maxY = Math.max(0, area.height - rect.height);
+    const x = Math.random()*maxX;
+    const y = Math.random()*maxY;
+    el.introNo.style.left = `${x}px`;
+    el.introNo.style.top = `${y}px`;
+    state.introTeleports++;
+    if(state.introTeleports % 67 === 0){
+      el.flash67.classList.add('show');
+      setTimeout(()=> el.flash67.classList.remove('show'), 1000);
+    }
+  }
+
+  async function handleAccess(){
+    const raw = normalizePwd(el.accessInput.value.toLowerCase());
+    if(!raw) return;
+    if(COMMON_PASSWORDS.includes(raw)){
+      el.accessError.textContent = '';
+      el.accessInput.value = '';
+      switchScreen('auth');
+      return;
+    }
+    if(!state.supabase && !(await initSupabase())) return;
+    try{
+      const hash = await sha256(raw);
+      const { data, error } = await state.supabase.from('profiles').select('nickname, avatar_data').eq('password_hash', hash).maybeSingle();
+      if(error) throw error;
+      if(data){
+        state.currentUser = { nickname: data.nickname, passwordHash: hash, avatar: data.avatar_data || '' };
+        saveCurrentUser();
+        await refreshCurrentUserProfile();
+        switchScreen('mode');
+        el.accessError.textContent = '';
+        el.accessInput.value = '';
+        return;
+      }
+      state.accessFails++;
+      if(state.accessFails >= 3){
+        state.accessFails = 0;
+        el.accessError.textContent = '';
+        switchScreen('alarm');
+        playAlarm(true);
+      } else {
+        el.accessError.textContent = `неправильный пароль ${state.accessFails}/3`;
+      }
+    }catch(err){
+      el.accessError.textContent = `Ошибка: ${err.message || err}`;
+    }
+  }
+
+  async function handleAuth(){
+    const nickname = normalizeNick(el.nickInput.value);
+    const password = normalizePwd(el.personalPasswordInput.value);
+    if(nickname.length < 2){ el.authError.textContent = 'Ник должен быть хотя бы 2 символа'; return; }
+    if(password.length < 4){ el.authError.textContent = 'Личный пароль должен быть не короче 4 символов'; return; }
+    if(!state.supabase && !(await initSupabase())) return;
+    el.authError.textContent = 'Проверяю...';
+    try{
+      const hash = await sha256(password);
+      const existingNickRes = await state.supabase.from('profiles').select('nickname, password_hash, avatar_data').eq('nickname', nickname).maybeSingle();
+      if(existingNickRes.error) throw existingNickRes.error;
+      if(existingNickRes.data){
+        if(existingNickRes.data.password_hash !== hash){
+          el.authError.textContent = 'Для этого ника нужен другой пароль';
+          return;
+        }
+        state.currentUser = { nickname, passwordHash: hash, avatar: existingNickRes.data.avatar_data || '' };
+        saveCurrentUser();
+        await refreshCurrentUserProfile();
+        el.authError.textContent = '';
+        switchScreen('mode');
+        return;
+      }
+
+      const samePassRes = await state.supabase.from('profiles').select('nickname').eq('password_hash', hash).maybeSingle();
+      if(samePassRes.error && !String(samePassRes.error.message||'').toLowerCase().includes('multiple')) throw samePassRes.error;
+      if(samePassRes.data){
+        el.authError.textContent = 'Такой пароль уже используется другим игроком';
+        return;
+      }
+
+      const insertRes = await state.supabase.from('profiles').insert({
+        nickname,
+        password_hash: hash,
+        avatar_data: '',
+      }).select('nickname, avatar_data').single();
+      if(insertRes.error) throw insertRes.error;
+
+      state.currentUser = { nickname, passwordHash: hash, avatar: '' };
+      saveCurrentUser();
+      el.authError.textContent = '';
+      await refreshCurrentUserProfile();
+      switchScreen('mode');
+    }catch(err){
+      el.authError.textContent = `Ошибка: ${err.message || err}`;
+    }
+  }
+
+  async function refreshCurrentUserProfile(){
+    if(!state.currentUser || !state.supabase) return null;
+    const nickname = state.currentUser.nickname;
+    const profileRes = await state.supabase.from('profiles').select('nickname, avatar_data, created_at').eq('nickname', nickname).single();
+    if(profileRes.error) throw profileRes.error;
+    const attemptsRes = await state.supabase.from('attempts').select('*').eq('nickname', nickname).order('created_at', { ascending: false }).limit(300);
+    if(attemptsRes.error) throw attemptsRes.error;
+    const built = buildStats(profileRes.data, attemptsRes.data || []);
+    state.currentUser.avatar = built.avatar || '';
+    saveCurrentUser();
+    return built;
+  }
+
+  function buildStats(profile, attempts){
+    const bestByMode = {10:null,20:null,30:null,67:null};
+    const totals = { skibidi:0, camera:0, poop:0, attempts:0 };
+    for(const a of attempts){
+      totals.attempts++;
+      totals.skibidi += Number(a.skibidi_hits || 0);
+      totals.camera += Number(a.camera_hits || 0);
+      totals.poop += Number(a.poop_hits || 0);
+      if(!a.success) continue;
+      const key = Number(a.target);
+      const cur = bestByMode[key];
+      if(!cur || Number(a.time_seconds) < Number(cur.time_seconds) || (Number(a.time_seconds) === Number(cur.time_seconds) && Number(a.camera_hits) < Number(cur.camera_hits))){
+        bestByMode[key] = a;
+      }
+    }
+    return {
+      nickname: profile.nickname,
+      avatar: profile.avatar_data || '',
+      attempts,
+      bestByMode,
+      totals,
+      createdAt: profile.created_at
+    };
+  }
+
+  async function openOwnProfile(){
+    if(!state.currentUser) return;
+    try{
+      const profile = await refreshCurrentUserProfile();
+      renderProfile(profile, true);
+      openOverlay(el.profileOverlay);
+    }catch(err){
+      alert('Не удалось загрузить профиль: ' + (err.message || err));
+    }
+  }
+
+  async function openPublicProfile(nickname){
+    if(!state.supabase && !(await initSupabase())) return;
+    try{
+      const profileRes = await state.supabase.from('profiles').select('nickname, avatar_data, created_at').eq('nickname', nickname).single();
+      if(profileRes.error) throw profileRes.error;
+      const attemptsRes = await state.supabase.from('attempts').select('*').eq('nickname', nickname).order('created_at', { ascending: false }).limit(300);
+      if(attemptsRes.error) throw attemptsRes.error;
+      const built = buildStats(profileRes.data, attemptsRes.data || []);
+      renderPublicProfile(built);
+      openOverlay(el.publicProfileOverlay);
+    }catch(err){
+      alert('Не удалось загрузить статистику: ' + (err.message || err));
+    }
+  }
+
+  function avatarHtml(dataUrl, fallback='👤'){
+    if(dataUrl) return `<img src="${dataUrl}" alt="" style="width:100%;height:100%;object-fit:cover">`;
+    return `<span>${fallback}</span>`;
+  }
+
+  function renderStatsCards(container, built){
+    const best10 = built.bestByMode[10] ? formatTime(built.bestByMode[10].time_seconds) : '—';
+    const best20 = built.bestByMode[20] ? formatTime(built.bestByMode[20].time_seconds) : '—';
+    const best30 = built.bestByMode[30] ? formatTime(built.bestByMode[30].time_seconds) : '—';
+    const best67 = built.bestByMode[67] ? formatTime(built.bestByMode[67].time_seconds) : '—';
+    container.innerHTML = `
+      <div class="stat-card"><div class="mini">Всего нажатий на скибиди</div><div class="big">${built.totals.skibidi}</div></div>
+      <div class="stat-card"><div class="mini">Всего нажатий на камераменов</div><div class="big">${built.totals.camera}</div></div>
+      <div class="stat-card"><div class="mini">Всего нажатий на какахи</div><div class="big">${built.totals.poop}</div></div>
+      <div class="stat-card"><div class="mini">Всего попыток</div><div class="big">${built.totals.attempts}</div></div>
+      <div class="stat-card"><div class="mini">Лучшее 10</div><div class="big">${best10}</div></div>
+      <div class="stat-card"><div class="mini">Лучшее 20</div><div class="big">${best20}</div></div>
+      <div class="stat-card"><div class="mini">Лучшее 30</div><div class="big">${best30}</div></div>
+      <div class="stat-card"><div class="mini">Лучшее 67</div><div class="big">${best67}</div></div>
+    `;
+  }
+
+  function renderAttemptsRows(tbody, attempts){
+    tbody.innerHTML = attempts.length ? attempts.map(a => `
+      <tr>
+        <td>${a.target}</td>
+        <td>${a.success ? 'победа' : 'поражение'}</td>
+        <td>${formatTime(a.time_seconds)}</td>
+        <td>${a.camera_hits}</td>
+        <td>${formatDate(a.created_at)}</td>
+      </tr>
+    `).join('') : `<tr><td colspan="5">Пока пусто</td></tr>`;
+  }
+
+  function renderProfile(built){
+    el.profileAvatar.innerHTML = avatarHtml(built.avatar);
+    el.profileNickname.textContent = built.nickname;
+    renderStatsCards(el.profileStatsGrid, built);
+    renderAttemptsRows(el.profileAttemptsBody, built.attempts);
+  }
+
+  function renderPublicProfile(built){
+    el.publicAvatar.innerHTML = avatarHtml(built.avatar);
+    el.publicNickname.textContent = built.nickname;
+    renderStatsCards(el.publicStatsGrid, built);
+    renderAttemptsRows(el.publicAttemptsBody, built.attempts);
+  }
+
+  async function uploadAvatar(file){
+    if(!file || !state.currentUser || !state.supabase) return;
+    const dataUrl = await resizeImageToDataUrl(file, 256, 0.82);
+    const { error } = await state.supabase.from('profiles').update({ avatar_data: dataUrl }).eq('nickname', state.currentUser.nickname).eq('password_hash', state.currentUser.passwordHash);
+    if(error) throw error;
+    state.currentUser.avatar = dataUrl;
+    saveCurrentUser();
+    await openOwnProfile();
+  }
+
+  function resizeImageToDataUrl(file, maxSize, quality){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const side = Math.min(img.width, img.height);
+          const sx = (img.width - side)/2;
+          const sy = (img.height - side)/2;
+          canvas.width = maxSize;
+          canvas.height = maxSize;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, sx, sy, side, side, 0, 0, maxSize, maxSize);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = reject;
+        img.src = reader.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function loadLeaderboard(mode){
+    state.leaderboardMode = mode;
+    if(!state.supabase && !(await initSupabase())) return;
+    el.leaderboardTabs.innerHTML = MODES.map(m => `<button class="tab ${m===mode?'active':''}" data-lbmode="${m}">${m}</button>`).join('');
+    el.leaderboardList.innerHTML = `<div class="muted">Загрузка...</div>`;
+    const { data, error } = await state.supabase.from('attempts').select('nickname,target,time_seconds,camera_hits,success,created_at').eq('success', true).eq('target', mode).order('time_seconds', { ascending: true }).order('camera_hits', { ascending: true }).limit(1000);
+    if(error){
+      el.leaderboardList.innerHTML = `<div class="error">Ошибка: ${escapeHtml(error.message || String(error))}</div>`;
+      return;
+    }
+    const bestMap = new Map();
+    for(const item of (data||[])){
+      const cur = bestMap.get(item.nickname);
+      if(!cur || Number(item.time_seconds) < Number(cur.time_seconds) || (Number(item.time_seconds) === Number(cur.time_seconds) && Number(item.camera_hits) < Number(cur.camera_hits))){
+        bestMap.set(item.nickname, item);
+      }
+    }
+    const rows = [...bestMap.values()].sort((a,b) => Number(a.time_seconds)-Number(b.time_seconds) || Number(a.camera_hits)-Number(b.camera_hits)).slice(0,100);
+    if(!rows.length){
+      el.leaderboardList.innerHTML = `<div class="muted">Пока пусто.</div>`;
+      return;
+    }
+    const nicks = rows.map(r => r.nickname);
+    const prof = await state.supabase.from('profiles').select('nickname,avatar_data').in('nickname', nicks);
+    const avatarMap = new Map((prof.data||[]).map(p => [p.nickname, p.avatar_data || '']));
+    el.leaderboardList.innerHTML = rows.map((r, idx) => {
+      const current = state.currentUser && r.nickname === state.currentUser.nickname;
+      const nameClass = current ? 'name-strong current' : 'name-strong';
+      return `
+      <div class="lb-row ${current?'current':''}" data-open-nick="${escapeHtml(r.nickname)}">
+        <div class="avatar">${avatarHtml(avatarMap.get(r.nickname) || '')}</div>
+        <div>
+          <div class="${nameClass}">${idx+1}. ${escapeHtml(r.nickname)}</div>
+          <div class="mini">Режим ${r.target}</div>
+        </div>
+        <div class="time-cell"><div class="mini">Время</div><div class="name-strong">${formatTime(r.time_seconds)}</div></div>
+        <div class="err-cell"><div class="mini">Ошибки</div><div class="name-strong">${r.camera_hits}</div></div>
+      </div>`;
+    }).join('');
+  }
+
+  function createEntity(className, text, clickHandler){
+    const node = document.createElement('button');
+    node.className = `entity ${className}`;
+    node.type = 'button';
+    node.textContent = text;
+    node.addEventListener('click', clickHandler);
+    return node;
+  }
+
+  function clearGameEntities(){
+    if(state.entities.skibidi) state.entities.skibidi.remove();
+    state.entities.cameras.forEach(c => c.remove());
+    if(state.entities.poop) state.entities.poop.remove();
+    state.entities = { skibidi:null, cameras:[], poop:null };
+  }
+
+  function resetGame(mode = state.currentMode){
+    clearGameEntities();
+    stopTimer();
+    state.currentMode = Number(mode);
+    state.timerMs = 0;
+    state.running = false;
+    state.hits = 0;
+    state.cameraHits = 0;
+    state.poopHits = 0;
+    state.poopVisible = false;
+    state.lastSpawn = null;
+    updateStats();
+    el.instruction.classList.remove('hidden');
+    el.instruction.innerHTML = `Нажми на скибиди,<br>чтобы начать.`;
+    const sk = createEntity('skibidi', '🚽', onSkibidiClick);
+    state.entities.skibidi = sk;
+    el.gameArea.appendChild(sk);
+    const area = el.gameArea.getBoundingClientRect();
+    positionNode(sk, area.width/2 - 36, area.height*0.52 - 36);
+  }
+
+  function startGame(mode){
+    state.currentMode = Number(mode);
+    switchScreen('game');
+    resetGame(mode);
+  }
+
+  function updateStats(){
+    el.statTime.textContent = formatTime(state.timerMs / 1000);
+    el.statProgress.textContent = `${state.hits}/${state.currentMode}`;
+    el.statErrors.textContent = `${state.cameraHits}`;
+  }
+
+  function startTimer(){
+    if(state.timerId) return;
+    const startAt = performance.now() - state.timerMs;
+    state.timerId = setInterval(() => {
+      state.timerMs = performance.now() - startAt;
+      updateStats();
+    }, 100);
+  }
+
+  function stopTimer(){
+    if(state.timerId){ clearInterval(state.timerId); state.timerId = null; }
+  }
+
+  function positionNode(node, x, y){
+    node.style.left = `${Math.max(0, x)}px`;
+    node.style.top = `${Math.max(0, y)}px`;
+  }
+
+  function overlap(a, b, extra = SAFE_DISTANCE){
+    const ax = a.x + a.w/2, ay = a.y + a.h/2;
+    const bx = b.x + b.w/2, by = b.y + b.h/2;
+    return Math.hypot(ax-bx, ay-by) < (Math.max(a.w,a.h)+Math.max(b.w,b.h))/2 + extra;
+  }
+
+  function randomBox(w,h, areaW, areaH){
+    return { x: Math.random() * Math.max(1, areaW-w), y: Math.random() * Math.max(1, areaH-h), w, h };
+  }
+
+  function generatePositions(){
+    const area = el.gameArea.getBoundingClientRect();
+    const areaW = area.width, areaH = area.height;
+    const skSize = { w:74, h:74 }, camSize = { w:68, h:68 }, poopSize = { w:54, h:54 };
+    for(let attempt = 0; attempt < 250; attempt++){
+      const placed = [];
+      const sk = randomBox(skSize.w, skSize.h, areaW, areaH);
+      if(state.lastSpawn && overlap(sk, state.lastSpawn, 80)) continue;
+      placed.push(sk);
+
+      const cams = [];
+      let ok = true;
+      for(let i=0;i<3;i++){
+        let found = null;
+        for(let j=0;j<160;j++){
+          const c = randomBox(camSize.w, camSize.h, areaW, areaH);
+          if(placed.every(p => !overlap(c,p, SAFE_DISTANCE - 20))){
+            found = c; break;
+          }
+        }
+        if(!found){ ok = false; break; }
+        placed.push(found); cams.push(found);
+      }
+      if(!ok) continue;
+
+      let poop = null;
+      if(state.poopVisible){
+        for(let j=0;j<160;j++){
+          const p = randomBox(poopSize.w, poopSize.h, areaW, areaH);
+          if(placed.every(item => !overlap(p,item, SAFE_DISTANCE - 25))){
+            poop = p; break;
+          }
+        }
+        if(!poop) continue;
+      }
+      return { sk, cams, poop };
+    }
+    return null;
+  }
+
+  function spawnRound(){
+    const pos = generatePositions();
+    if(!pos) return;
+    state.lastSpawn = pos.sk;
+    positionNode(state.entities.skibidi, pos.sk.x, pos.sk.y);
+    if(!state.entities.cameras.length){
+      state.entities.cameras = Array.from({length:3}, () => createEntity('camera', '📹', onCameraClick));
+      state.entities.cameras.forEach(c => el.gameArea.appendChild(c));
+    }
+    state.entities.cameras.forEach((c, i) => positionNode(c, pos.cams[i].x, pos.cams[i].y));
+
+    if(state.poopVisible){
+      if(!state.entities.poop){
+        state.entities.poop = createEntity('poop', '💩', onPoopClick);
+        el.gameArea.appendChild(state.entities.poop);
+      }
+      positionNode(state.entities.poop, pos.poop.x, pos.poop.y);
+      state.entities.poop.classList.remove('hidden');
+    } else if(state.entities.poop){
+      state.entities.poop.classList.add('hidden');
+    }
+  }
+
+  async function onSkibidiClick(){
+    if(!state.running){
+      state.running = true;
+      el.instruction.classList.add('hidden');
+      startTimer();
+    }
+    playGoodBeep(0.22, 920, 0.14);
+    state.hits++;
+    state.poopVisible = state.hits > 0 && state.hits % 5 === 0 && state.hits < state.currentMode;
+    updateStats();
+    if(state.hits >= state.currentMode){
+      await finishGame(true);
+      return;
+    }
+    spawnRound();
+  }
+
+  function onCameraClick(){
+    if(!state.running) return;
+    state.cameraHits++;
+    state.timerMs += 5000;
+    updateStats();
+    playBadBeep(0.28, 280, 0.18);
+  }
+
+  async function onPoopClick(){
+    if(!state.running) return;
+    state.poopHits++;
+    await finishGame(false);
+  }
+
+  async function finishGame(success){
+    stopTimer();
+    state.running = false;
+    if(success){
+      state.resultReason = 'Ваш результат';
+    }else{
+      state.resultReason = 'Ты лошарик';
+      playFart();
+    }
+    const payload = {
+      nickname: state.currentUser?.nickname || 'unknown',
+      target: state.currentMode,
+      time_seconds: Number((state.timerMs/1000).toFixed(1)),
+      camera_hits: state.cameraHits,
+      skibidi_hits: state.hits,
+      poop_hits: state.poopHits,
+      success,
+    };
+    if(state.supabase && state.currentUser){
+      try{ await state.supabase.from('attempts').insert(payload); } catch(e){}
+    }
+    showResult(payload, success);
+  }
+
+  function showResult(payload, success){
+    el.resultTitle.textContent = success ? 'Ваш результат' : 'Ты лошарик';
+    el.resultTime.textContent = formatTime(payload.time_seconds);
+    el.resultErrors.textContent = payload.camera_hits;
+    el.resultSkibidi.textContent = payload.skibidi_hits;
+    el.resultPoop.textContent = payload.poop_hits;
+    openOverlay(el.resultOverlay);
+  }
+
+  function ensureAudio(){
+    if(!state.audioCtx){
+      state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if(state.audioCtx.state === 'suspended'){
+      state.audioCtx.resume();
+    }
+    return state.audioCtx;
+  }
+
+  function playTone({type='sine', freq=440, duration=0.2, gain=0.12, freq2=null, loop=false}){
+    const ctx = ensureAudio();
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    if(freq2) osc.frequency.linearRampToValueAtTime(freq2, ctx.currentTime + duration);
+    g.gain.setValueAtTime(0.0001, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(gain, ctx.currentTime + 0.02);
+    if(!loop){
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+    }
+    osc.connect(g).connect(ctx.destination);
+    osc.start();
+    if(!loop){ osc.stop(ctx.currentTime + duration + 0.03); return null; }
+    return { osc, g, type:'osc' };
+  }
+
+  function playGoodBeep(gain=0.2,freq=900,duration=0.12){ playTone({type:'triangle', gain, freq, freq2:freq*1.18, duration}); }
+  function playBadBeep(gain=0.18,freq=260,duration=0.18){ playTone({type:'sawtooth', gain, freq, freq2:180, duration}); }
+
+  const fartAudio = new Audio('fart-with-reverb.mp3');
+  fartAudio.preload = 'auto';
+  const alarmAudio = new Audio('Звук сигнализации из-за ограбления.mp3');
+  alarmAudio.loop = true;
+  alarmAudio.preload = 'auto';
+  function playFart(){
+    fartAudio.currentTime = 0;
+    fartAudio.volume = 1;
+    fartAudio.play().catch(()=>{});
+  }
+  function playAlarm(on){
+    if(on){
+      alarmAudio.currentTime = 0;
+      alarmAudio.volume = 1;
+      alarmAudio.play().catch(()=>{});
+    }else{
+      alarmAudio.pause();
+      try{ alarmAudio.currentTime = 0; }catch(e){}
+    }
+  }
+
+  function pauseAllAudio(){
+    if(state.audioCtx && state.audioCtx.state === 'running'){
+      state.audioCtx.suspend().catch(()=>{});
+    }
+    if(!alarmAudio.paused){
+      state.pausedAudio = { alarm:true };
+      alarmAudio.pause();
+    } else {
+      state.pausedAudio = null;
+    }
+    if(!fartAudio.paused) fartAudio.pause();
+  }
+  function resumeAllAudio(){
+    if(state.audioCtx && state.audioCtx.state === 'suspended'){
+      state.audioCtx.resume().catch(()=>{});
+    }
+    if(state.pausedAudio?.alarm){
+      alarmAudio.play().catch(()=>{});
+    }
+    state.pausedAudio = null;
+  }
+
+  function bindFullscreen(){
+    el.fullscreenBtn.addEventListener('click', async () => {
+      try{
+        if(document.fullscreenElement){
+          await document.exitFullscreen();
+        } else {
+          await document.documentElement.requestFullscreen();
+        }
+      }catch(e){}
+    });
+  }
+
+  function bindGeneral(){
+    document.querySelectorAll('[data-close]').forEach(btn => btn.addEventListener('click', () => closeOverlay(document.getElementById(btn.dataset.close))));
+    el.saveSupabaseBtn.addEventListener('click', saveSetup);
+    el.introYes.addEventListener('click', async () => {
+      if(!state.supabase) await initSupabase();
+      switchScreen('access');
+    });
+    el.introNo.addEventListener('click', teleportIntroNo);
+    el.introNo.addEventListener('touchstart', e => { e.preventDefault(); teleportIntroNo(); }, { passive:false });
+
+    document.addEventListener('mousemove', e => {
+      const isTouch = matchMedia('(pointer:coarse)').matches;
+      if(isTouch || screens.intro.classList.contains('hidden')) return;
+      const rect = el.introNo.getBoundingClientRect();
+      const near = e.clientX > rect.left - 90 && e.clientX < rect.right + 90 && e.clientY > rect.top - 90 && e.clientY < rect.bottom + 90;
+      if(near) teleportIntroNo();
+    });
+
+    el.accessCheck.addEventListener('click', handleAccess);
+    el.accessBack.addEventListener('click', () => switchScreen('intro'));
+    el.authBack.addEventListener('click', () => switchScreen('access'));
+    el.authContinue.addEventListener('click', handleAuth);
+    el.screenAlarm.addEventListener('click', () => { playAlarm(false); switchScreen('access'); });
+
+    document.querySelectorAll('.modeBtn').forEach(btn => btn.addEventListener('click', () => startGame(Number(btn.dataset.mode))));
+    el.openProfileFromMode.addEventListener('click', openOwnProfile);
+    el.openLeaderboardFromMode.addEventListener('click', async () => { await loadLeaderboard(state.currentMode || 10); openOverlay(el.leaderboardOverlay); });
+    el.profileBtn.addEventListener('click', openOwnProfile);
+    el.leaderboardBtn.addEventListener('click', async () => { await loadLeaderboard(state.currentMode || 10); openOverlay(el.leaderboardOverlay); });
+    el.playAgainBtn.addEventListener('click', () => { closeOverlay(el.resultOverlay); startGame(state.currentMode); });
+    el.pickModeBtn.addEventListener('click', () => { closeOverlay(el.resultOverlay); switchScreen('mode'); });
+    el.goProfileBtn.addEventListener('click', async () => { closeOverlay(el.resultOverlay); await openOwnProfile(); });
+
+    el.leaderboardTabs.addEventListener('click', async (e) => {
+      const btn = e.target.closest('[data-lbmode]');
+      if(!btn) return;
+      await loadLeaderboard(Number(btn.dataset.lbmode));
+    });
+    el.leaderboardList.addEventListener('click', (e) => {
+      const row = e.target.closest('[data-open-nick]');
+      if(!row) return;
+      openPublicProfile(row.dataset.openNick);
+    });
+
+    el.uploadAvatarBtn.addEventListener('click', () => el.avatarFileInput.click());
+    el.avatarFileInput.addEventListener('change', async () => {
+      const file = el.avatarFileInput.files && el.avatarFileInput.files[0];
+      if(!file) return;
+      try{ await uploadAvatar(file); }catch(err){ alert('Не удалось загрузить аватарку: ' + (err.message || err)); }
+      el.avatarFileInput.value = '';
+    });
+
+    document.addEventListener('visibilitychange', () => document.hidden ? pauseAllAudio() : resumeAllAudio());
+    window.addEventListener('blur', pauseAllAudio);
+    window.addEventListener('focus', resumeAllAudio);
+    window.addEventListener('resize', () => { if(!screens.game.classList.contains('hidden')) spawnRound(); });
+
+    [el.accessInput, el.personalPasswordInput, el.nickInput].forEach(inp => inp.addEventListener('focus', () => setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100)));
+  }
+
+  async function boot(){
+    bindFullscreen();
+    bindGeneral();
+    await initSupabase();
+    if(state.currentUser){
+      try{
+        await refreshCurrentUserProfile();
+      }catch(e){
+        state.currentUser = null;
+        saveCurrentUser();
+      }
+    }
+    switchScreen('intro');
+  }
+
+  boot();
+})();
+</script>
+</body>
+</html>
