@@ -31,7 +31,7 @@ const MASTER_PASSWORD='яскибиди';
 const SUPABASE_URL='https://bfnwqfoeqjqiktgehrtz.supabase.co';
 const SUPABASE_ANON='sb_publishable_zgCq_-lIJ-a1nH6BhUA7Sw__8EpPene';
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
-const screenMap={intro:introScreen,password:passwordScreen,auth:authScreen,mode:modeScreen,leaderboard:leaderboardScreen,profile:profileScreen,publicProfile:publicProfileScreen,cameraFail:cameraFailScreen,game:gameScreen};
+const screenMap=
 {intro:introScreen,password:passwordScreen,auth:authScreen,mode:modeScreen,leaderboard:leaderboardScreen,profile:profileScreen,publicProfile:publicProfileScreen,cameraFail:cameraFailScreen,game:gameScreen};
 let state={target:10,hits:0,cameraHits:0,started:false,startMs:0,timerId:null,finished:false,poopEvery:5};
 let wrongPasswordCount=0, teleportCount=0, currentLeaderboardMode=10, resumeAlarmOnFocus=false,resumeFartOnFocus=false,savedAlarmTime=0,savedFartTime=0;
@@ -196,7 +196,7 @@ async function apiGet(query){
   }
   throw new Error('Unknown action');
 }
-); const data=await res.json().catch(()=>({})); if(!res.ok) throw new Error(data.error||'Ошибка'); return data;}
+
 function randomPosition(){const areaRect=buttonArea.getBoundingClientRect(), btnRect=noBtn.getBoundingClientRect(); const maxX=Math.max(0,areaRect.width-btnRect.width), maxY=Math.max(0,areaRect.height-btnRect.height); noBtn.style.left=`${Math.random()*maxX}px`; noBtn.style.top=`${Math.random()*maxY}px`; teleportCount++; if(teleportCount%67===0){flash67.classList.add('show'); setTimeout(()=>flash67.classList.remove('show'),1000);}}
 yesBtn.onclick=()=>{wrongPasswordCount=0; passwordInput.value=''; setStatus(passwordStatus); showScreen('password'); setTimeout(()=>passwordInput.focus(),50);};
 if(isTouchDevice){noBtn.addEventListener('touchstart',e=>{e.preventDefault();randomPosition();},{passive:false}); noBtn.addEventListener('click',e=>{e.preventDefault();randomPosition();});} else {document.addEventListener('mousemove',e=>{if(!introScreen.classList.contains('active')) return; const rect=noBtn.getBoundingClientRect(); const cx=rect.left+rect.width/2, cy=rect.top+rect.height/2; if(Math.hypot(e.clientX-cx,e.clientY-cy)<110) randomPosition();}); noBtn.addEventListener('click',e=>{e.preventDefault();randomPosition();});}
