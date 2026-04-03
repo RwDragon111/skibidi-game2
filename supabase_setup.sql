@@ -1,22 +1,30 @@
 -- Запусти этот SQL целиком в Supabase SQL Editor.
-create table if not exists public.profiles (
-  nickname text primary key,
-  password_hash text not null unique,
-  avatar_data text not null default '',
-  created_at timestamptz not null default now()
-);
+alter table if exists public.profiles drop constraint if exists profiles_password_hash_key;
 
-create table if not exists public.attempts (
-  id bigint generated always as identity primary key,
-  nickname text not null references public.profiles(nickname) on delete cascade,
-  target integer not null check (target in (10,20,30,67)),
-  time_seconds numeric(10,1) not null default 0,
-  camera_hits integer not null default 0,
-  skibidi_hits integer not null default 0,
-  poop_hits integer not null default 0,
-  success boolean not null default false,
-  created_at timestamptz not null default now()
-);
+do $$ begin
+  create table if not exists public.profiles (
+    nickname text primary key,
+    password_hash text not null,
+    avatar_data text not null default '',
+    created_at timestamptz not null default now()
+  );
+exception when others then null;
+end $$;
+
+do $$ begin
+  create table if not exists public.attempts (
+    id bigint generated always as identity primary key,
+    nickname text not null references public.profiles(nickname) on delete cascade,
+    target integer not null check (target in (10,20,30,67)),
+    time_seconds numeric(10,1) not null default 0,
+    camera_hits integer not null default 0,
+    skibidi_hits integer not null default 0,
+    poop_hits integer not null default 0,
+    success boolean not null default false,
+    created_at timestamptz not null default now()
+  );
+exception when others then null;
+end $$;
 
 create index if not exists attempts_mode_success_idx on public.attempts (target, success, time_seconds, camera_hits);
 create index if not exists attempts_nickname_idx on public.attempts (nickname, created_at desc);

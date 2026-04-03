@@ -1,8 +1,9 @@
 <!DOCTYPE html>
+
 <html lang="ru">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Ты скибиди?</title>
 <style>
 :root{--bg1:#fff7f0;--bg2:#ffe8d6;--brown:#8b5e3c;--line:rgba(255,255,255,.16);--app-h:100vh;--game-bg1:#101522;--game-bg2:#1b2336;--panel:rgba(255,255,255,.08);--text:#f5f7ff;--muted:#c8d0e7;--accent:#7c5cff;--good:#43c463;--bad:#ff5f6d;--gold:#ffcc66}
@@ -14,25 +15,105 @@
 @media (max-width:600px){.card{padding:24px 16px}.buttons{height:220px}#yesBtn,#noBtn{top:110px}.tabs{gap:8px}}
 </style>
 </head>
-<body><button class="roundBtn" id="globalFullscreenBtn" aria-label="Полноэкранный режим">⛶</button>
+<body><button aria-label="Полноэкранный режим" class="roundBtn" id="globalFullscreenBtn">⛶</button>
 <section class="screen active" id="introScreen"><div class="container"><div class="card"><button class="main-btn">Ты скибиди?</button><div class="buttons" id="buttonArea"><button class="answer-btn" id="yesBtn">да</button><button class="answer-btn" id="noBtn">нет</button></div></div></div></section>
-<section class="screen game-screen" id="passwordScreen"><div class="game-card"><div class="hero">❓</div><h1>введи пароль</h1><p class="sub">Введи общий пароль или свой личный пароль, если уже регистрировался.</p><input id="passwordInput" class="input" placeholder="введи пароль..." autocomplete="off" /><div class="btnRow"><button class="gbtn" id="checkPasswordBtn">проверить</button><button class="gbtn secondary" id="passwordBackToIntroBtn">назад</button></div><div id="passwordStatus" class="status"></div></div></section>
-<section class="screen game-screen" id="authScreen"><div class="game-card"><div class="hero">📝</div><h2>введи ник и пароль</h2><p class="sub">Если ник новый, аккаунт создастся. Если такой ник уже есть — пароль должен совпадать. Пароль нужно запомнить: без него потом не войти.</p><input id="nicknameInput" class="input" placeholder="твой ник..." maxlength="18" autocomplete="nickname" /><div style="height:10px"></div><input id="personalPasswordInput" class="input" placeholder="личный пароль..." maxlength="60" autocomplete="new-password" /><div class="btnRow"><button class="gbtn good" id="authContinueBtn">продолжить</button><button class="gbtn secondary" id="authBackBtn">назад</button></div><div id="authStatus" class="status"></div><div class="note">Личный пароль должен быть уникальным. Если такой пароль уже использует другой игрок, зарегистрироваться не получится.</div></div></section>
+<section class="screen game-screen" id="passwordScreen"><div class="game-card"><div class="hero">❓</div><h1>введи пароль</h1><p class="sub">Введи общий пароль, чтобы перейти ко входу.</p><input autocomplete="off" class="input" id="passwordInput" placeholder="введи пароль..."/><div class="btnRow"><button class="gbtn" id="checkPasswordBtn">проверить</button><button class="gbtn secondary" id="passwordBackToIntroBtn">назад</button></div><div class="status" id="passwordStatus"></div></div></section>
+<section class="screen game-screen" id="authScreen"><div class="game-card"><div class="hero">📝</div><h2>введи ник и пароль</h2><p class="sub">Введи ник и пароль. Если ник новый, аккаунт создастся. Если такой ник уже есть — пароль должен совпадать.</p><input autocomplete="nickname" class="input" id="nicknameInput" maxlength="16" placeholder="твой ник..."/><div style="height:10px"></div><input autocomplete="new-password" class="input" id="personalPasswordInput" maxlength="16" placeholder="пароль..."/><div class="btnRow"><button class="gbtn good" id="authContinueBtn">продолжить</button><button class="gbtn secondary" id="authBackBtn">назад</button></div><div class="status" id="authStatus"></div><div class="note">Ник и пароль могут быть любыми, но не длиннее 16 символов.</div></div></section>
 <section class="screen game-screen" id="modeScreen"><div class="game-card modeWrap"><div class="topActions"><button class="roundBtn" id="modeProfileBtn">👤</button><button class="roundBtn" id="modeLeaderboardBtn">🏆</button></div><div class="hero" id="modeHero">🎮</div><h2>выбери количество нажатий</h2><p class="sub">Ник: <strong id="currentNickText">—</strong></p><div class="btnRow"><button class="gbtn good mode-btn" data-target="10">10</button><button class="gbtn good mode-btn" data-target="20">20</button><button class="gbtn good mode-btn" data-target="30">30</button><button class="gbtn warning mode-btn" data-target="67">67</button></div><div class="btnRow"><button class="gbtn secondary" id="modeToPasswordBtn">выйти</button></div></div></section>
-<section class="screen game-screen" id="leaderboardScreen"><div class="game-card" style="width:min(96vw,760px)"><div class="hero">🏆</div><h2>лидерборд</h2><p class="sub">Показывается только лучший результат каждого ника для выбранного режима.</p><div class="tabs"><button class="tabBtn active" data-mode="10">10</button><button class="tabBtn" data-mode="20">20</button><button class="tabBtn" data-mode="30">30</button><button class="tabBtn" data-mode="67">67</button></div><div class="btnRow"><button class="gbtn" id="refreshLeaderboardBtn">обновить</button><button class="gbtn secondary" id="leaderboardBackBtn">назад</button></div><div id="leaderboardStatus" class="status"></div><div class="leaderboardList" id="leaderboardList"></div></div></section>
-<section class="screen game-screen" id="profileScreen"><div class="game-card" style="width:min(96vw,860px)"><div class="hero" id="profileAvatarHero">👤</div><h2>личный кабинет</h2><p class="sub">Ник: <strong id="profileNickText">—</strong></p><label class="avatarLabel">📷 загрузить аватарку<input id="avatarInput" type="file" accept="image/*" /></label><div id="profileStatus" class="status"></div><div class="profileGrid"><div class="profileStat">Всего нажатий на скибиди<strong id="totalSkibidiText">0</strong></div><div class="profileStat">Всего нажатий на камераменов<strong id="totalCameraText">0</strong></div><div class="profileStat">Всего нажатий на какахи<strong id="totalPoopText">0</strong></div><div class="profileStat">Всего попыток<strong id="totalAttemptsText">0</strong></div></div><div class="modeBestGrid"><div class="modeBest"><div class="label">Лучшее 10</div><div class="time" id="best10">—</div></div><div class="modeBest"><div class="label">Лучшее 20</div><div class="time" id="best20">—</div></div><div class="modeBest"><div class="label">Лучшее 30</div><div class="time" id="best30">—</div></div><div class="modeBest"><div class="label">Лучшее 67</div><div class="time" id="best67">—</div></div></div><div class="attemptsList" id="attemptsList"></div><div class="btnRow"><button class="gbtn secondary" id="profileBackBtn">назад</button></div></div></section><section class="screen game-screen" id="publicProfileScreen"><div class="game-card" style="width:min(96vw,860px)"><div class="hero" id="publicAvatarHero">👤</div><h2>профиль игрока</h2><p class="sub">Ник: <strong id="publicNickText">—</strong></p><div id="publicProfileStatus" class="status"></div><div class="profileGrid"><div class="profileStat">Всего нажатий на скибиди<strong id="publicTotalSkibidiText">0</strong></div><div class="profileStat">Всего нажатий на камераменов<strong id="publicTotalCameraText">0</strong></div><div class="profileStat">Всего нажатий на какахи<strong id="publicTotalPoopText">0</strong></div><div class="profileStat">Всего попыток<strong id="publicTotalAttemptsText">0</strong></div></div><div class="modeBestGrid"><div class="modeBest"><div class="label">Лучшее 10</div><div class="time" id="publicBest10">—</div></div><div class="modeBest"><div class="label">Лучшее 20</div><div class="time" id="publicBest20">—</div></div><div class="modeBest"><div class="label">Лучшее 30</div><div class="time" id="publicBest30">—</div></div><div class="modeBest"><div class="label">Лучшее 67</div><div class="time" id="publicBest67">—</div></div></div><div class="attemptsList" id="publicAttemptsList"></div><div class="btnRow"><button class="gbtn secondary" id="publicProfileBackBtn">назад</button></div></div></section>
+<section class="screen game-screen" id="leaderboardScreen"><div class="game-card" style="width:min(96vw,760px)"><div class="hero">🏆</div><h2>лидерборд</h2><p class="sub">Показывается только лучший результат каждого ника для выбранного режима.</p><div class="tabs"><button class="tabBtn active" data-mode="10">10</button><button class="tabBtn" data-mode="20">20</button><button class="tabBtn" data-mode="30">30</button><button class="tabBtn" data-mode="67">67</button></div><div class="btnRow"><button class="gbtn" id="refreshLeaderboardBtn">обновить</button><button class="gbtn secondary" id="leaderboardBackBtn">назад</button></div><div class="status" id="leaderboardStatus"></div><div class="leaderboardList" id="leaderboardList"></div></div></section>
+<section class="screen game-screen" id="profileScreen"><div class="game-card" style="width:min(96vw,860px)"><div class="hero" id="profileAvatarHero">👤</div><h2>личный кабинет</h2><p class="sub">Ник: <strong id="profileNickText">—</strong></p><label class="avatarLabel">📷 загрузить аватарку<input accept="image/*" id="avatarInput" type="file"/></label><div class="status" id="profileStatus"></div><div class="profileGrid"><div class="profileStat">Всего нажатий на скибиди<strong id="totalSkibidiText">0</strong></div><div class="profileStat">Всего нажатий на камераменов<strong id="totalCameraText">0</strong></div><div class="profileStat">Всего нажатий на какахи<strong id="totalPoopText">0</strong></div><div class="profileStat">Всего попыток<strong id="totalAttemptsText">0</strong></div></div><div class="modeBestGrid"><div class="modeBest"><div class="label">Лучшее 10</div><div class="time" id="best10">—</div></div><div class="modeBest"><div class="label">Лучшее 20</div><div class="time" id="best20">—</div></div><div class="modeBest"><div class="label">Лучшее 30</div><div class="time" id="best30">—</div></div><div class="modeBest"><div class="label">Лучшее 67</div><div class="time" id="best67">—</div></div></div><div class="attemptsList" id="attemptsList"></div><div class="btnRow"><button class="gbtn secondary" id="profileBackBtn">назад</button></div></div></section><section class="screen game-screen" id="publicProfileScreen"><div class="game-card" style="width:min(96vw,860px)"><div class="hero" id="publicAvatarHero">👤</div><h2>профиль игрока</h2><p class="sub">Ник: <strong id="publicNickText">—</strong></p><div class="status" id="publicProfileStatus"></div><div class="profileGrid"><div class="profileStat">Всего нажатий на скибиди<strong id="publicTotalSkibidiText">0</strong></div><div class="profileStat">Всего нажатий на камераменов<strong id="publicTotalCameraText">0</strong></div><div class="profileStat">Всего нажатий на какахи<strong id="publicTotalPoopText">0</strong></div><div class="profileStat">Всего попыток<strong id="publicTotalAttemptsText">0</strong></div></div><div class="modeBestGrid"><div class="modeBest"><div class="label">Лучшее 10</div><div class="time" id="publicBest10">—</div></div><div class="modeBest"><div class="label">Лучшее 20</div><div class="time" id="publicBest20">—</div></div><div class="modeBest"><div class="label">Лучшее 30</div><div class="time" id="publicBest30">—</div></div><div class="modeBest"><div class="label">Лучшее 67</div><div class="time" id="publicBest67">—</div></div></div><div class="attemptsList" id="publicAttemptsList"></div><div class="btnRow"><button class="gbtn secondary" id="publicProfileBackBtn">назад</button></div></div></section>
 <section class="screen game-screen" id="cameraFailScreen"><div class="game-card"><div class="hero">📹</div><h2>Ты камерамен</h2></div></section>
-<section class="screen game-screen" id="gameScreen"><div class="gameWrap"><div class="gameHeader"><div class="pill">⏱ <span id="timerText">0.0</span> c</div><div class="pill">🏁 <span id="progressText">0</span>/<span id="targetText">10</span></div><div class="pill">📹 Ошибки: <span id="cameraHitsText">0</span></div><button class="gbtn lbBtn" id="openLeaderboardBtn">🏆</button><button class="gbtn cabBtn" id="openProfileBtn">👤</button></div><div class="gameArea" id="gameArea"><div class="hint" id="hintText">Нажми на скибиди, чтобы начать.</div><button id="skibidi" class="entity skibidi">🚽</button><button id="cam1" class="entity cameraman hidden">📹</button><button id="cam2" class="entity cameraman hidden">📹</button><button id="cam3" class="entity cameraman hidden">📹</button><button id="poop" class="entity poop hidden">💩</button><div id="resultOverlay" class="overlay"><div class="resultCard"><div class="bigResult win">Ваш результат</div><div class="metric">Время: <strong id="resultTime">0.0 c</strong></div><div class="metric">Количество нажатий на камераменов: <strong id="resultCameraHits">0</strong></div><div class="btnRow"><button class="gbtn good" id="restartBtn">Начать заново</button><button class="gbtn warning" id="chooseModeBtn">Выбрать другое количество</button><button class="gbtn secondary" id="resultToPasswordBtn">Выйти</button></div></div></div><div id="loseOverlay" class="overlay"><div class="resultCard"><div class="bigResult lose">Ты лошарик</div><div class="metric">Ты нажал на какашку.</div><div class="btnRow"><button class="gbtn warning" id="retryAfterLoseBtn">Начать заново</button></div></div></div></div></div></section>
+<section class="screen game-screen" id="gameScreen"><div class="gameWrap"><div class="gameHeader"><div class="pill">⏱ <span id="timerText">0.0</span> c</div><div class="pill">🏁 <span id="progressText">0</span>/<span id="targetText">10</span></div><div class="pill">📹 Ошибки: <span id="cameraHitsText">0</span></div><button class="gbtn lbBtn" id="openLeaderboardBtn">🏆</button><button class="gbtn cabBtn" id="openProfileBtn">👤</button></div><div class="gameArea" id="gameArea"><div class="hint" id="hintText">Нажми на скибиди, чтобы начать.</div><button class="entity skibidi" id="skibidi">🚽</button><button class="entity cameraman hidden" id="cam1">📹</button><button class="entity cameraman hidden" id="cam2">📹</button><button class="entity cameraman hidden" id="cam3">📹</button><button class="entity poop hidden" id="poop">💩</button><div class="overlay" id="resultOverlay"><div class="resultCard"><div class="bigResult win">Ваш результат</div><div class="metric">Время: <strong id="resultTime">0.0 c</strong></div><div class="metric">Количество нажатий на камераменов: <strong id="resultCameraHits">0</strong></div><div class="btnRow"><button class="gbtn good" id="restartBtn">Начать заново</button><button class="gbtn warning" id="chooseModeBtn">Выбрать другое количество</button><button class="gbtn secondary" id="resultToPasswordBtn">Выйти</button></div></div></div><div class="overlay" id="loseOverlay"><div class="resultCard"><div class="bigResult lose">Ты лошарик</div><div class="metric">Ты нажал на какашку.</div><div class="btnRow"><button class="gbtn warning" id="retryAfterLoseBtn">Начать заново</button></div></div></div></div></div></section>
 <div class="flash67" id="flash67"><div class="flash67-box">67</div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
+<script>const attemptsList = document.getElementById('attemptsList');
+const authBackBtn = document.getElementById('authBackBtn');
+const authContinueBtn = document.getElementById('authContinueBtn');
+const authScreen = document.getElementById('authScreen');
+const authStatus = document.getElementById('authStatus');
+const avatarInput = document.getElementById('avatarInput');
+const best10 = document.getElementById('best10');
+const best20 = document.getElementById('best20');
+const best30 = document.getElementById('best30');
+const best67 = document.getElementById('best67');
+const buttonArea = document.getElementById('buttonArea');
+const cam1 = document.getElementById('cam1');
+const cam2 = document.getElementById('cam2');
+const cam3 = document.getElementById('cam3');
+const cameraFailScreen = document.getElementById('cameraFailScreen');
+const cameraHitsText = document.getElementById('cameraHitsText');
+const checkPasswordBtn = document.getElementById('checkPasswordBtn');
+const chooseModeBtn = document.getElementById('chooseModeBtn');
+const currentNickText = document.getElementById('currentNickText');
+const flash67 = document.getElementById('flash67');
+const gameArea = document.getElementById('gameArea');
+const gameScreen = document.getElementById('gameScreen');
+const globalFullscreenBtn = document.getElementById('globalFullscreenBtn');
+const hintText = document.getElementById('hintText');
+const introScreen = document.getElementById('introScreen');
+const leaderboardBackBtn = document.getElementById('leaderboardBackBtn');
+const leaderboardList = document.getElementById('leaderboardList');
+const leaderboardScreen = document.getElementById('leaderboardScreen');
+const leaderboardStatus = document.getElementById('leaderboardStatus');
+const loseOverlay = document.getElementById('loseOverlay');
+const modeHero = document.getElementById('modeHero');
+const modeLeaderboardBtn = document.getElementById('modeLeaderboardBtn');
+const modeProfileBtn = document.getElementById('modeProfileBtn');
+const modeScreen = document.getElementById('modeScreen');
+const modeToPasswordBtn = document.getElementById('modeToPasswordBtn');
+const nicknameInput = document.getElementById('nicknameInput');
+const noBtn = document.getElementById('noBtn');
+const openLeaderboardBtn = document.getElementById('openLeaderboardBtn');
+const openProfileBtn = document.getElementById('openProfileBtn');
+const passwordBackToIntroBtn = document.getElementById('passwordBackToIntroBtn');
+const passwordInput = document.getElementById('passwordInput');
+const passwordScreen = document.getElementById('passwordScreen');
+const passwordStatus = document.getElementById('passwordStatus');
+const personalPasswordInput = document.getElementById('personalPasswordInput');
+const poop = document.getElementById('poop');
+const profileAvatarHero = document.getElementById('profileAvatarHero');
+const profileBackBtn = document.getElementById('profileBackBtn');
+const profileNickText = document.getElementById('profileNickText');
+const profileScreen = document.getElementById('profileScreen');
+const profileStatus = document.getElementById('profileStatus');
+const progressText = document.getElementById('progressText');
+const publicAttemptsList = document.getElementById('publicAttemptsList');
+const publicAvatarHero = document.getElementById('publicAvatarHero');
+const publicBest10 = document.getElementById('publicBest10');
+const publicBest20 = document.getElementById('publicBest20');
+const publicBest30 = document.getElementById('publicBest30');
+const publicBest67 = document.getElementById('publicBest67');
+const publicNickText = document.getElementById('publicNickText');
+const publicProfileBackBtn = document.getElementById('publicProfileBackBtn');
+const publicProfileScreen = document.getElementById('publicProfileScreen');
+const publicProfileStatus = document.getElementById('publicProfileStatus');
+const publicTotalAttemptsText = document.getElementById('publicTotalAttemptsText');
+const publicTotalCameraText = document.getElementById('publicTotalCameraText');
+const publicTotalPoopText = document.getElementById('publicTotalPoopText');
+const publicTotalSkibidiText = document.getElementById('publicTotalSkibidiText');
+const refreshLeaderboardBtn = document.getElementById('refreshLeaderboardBtn');
+const restartBtn = document.getElementById('restartBtn');
+const resultCameraHits = document.getElementById('resultCameraHits');
+const resultOverlay = document.getElementById('resultOverlay');
+const resultTime = document.getElementById('resultTime');
+const resultToPasswordBtn = document.getElementById('resultToPasswordBtn');
+const retryAfterLoseBtn = document.getElementById('retryAfterLoseBtn');
+const skibidi = document.getElementById('skibidi');
+const targetText = document.getElementById('targetText');
+const timerText = document.getElementById('timerText');
+const totalAttemptsText = document.getElementById('totalAttemptsText');
+const totalCameraText = document.getElementById('totalCameraText');
+const totalPoopText = document.getElementById('totalPoopText');
+const totalSkibidiText = document.getElementById('totalSkibidiText');
+const yesBtn = document.getElementById('yesBtn');
+
 
 const MASTER_PASSWORD='яскибиди';
 const SUPABASE_URL='https://bfnwqfoeqjqiktgehrtz.supabase.co';
 const SUPABASE_ANON='sb_publishable_zgCq_-lIJ-a1nH6BhUA7Sw__8EpPene';
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
 const screenMap=
-{intro:introScreen,password:passwordScreen,auth:authScreen,mode:modeScreen,leaderboard:leaderboardScreen,profile:profileScreen,publicProfile:publicProfileScreen,cameraFail:cameraFailScreen,game:gameScreen};
+
 let state={target:10,hits:0,cameraHits:0,started:false,startMs:0,timerId:null,finished:false,poopEvery:5};
 let wrongPasswordCount=0, teleportCount=0, currentLeaderboardMode=10, resumeAlarmOnFocus=false,resumeFartOnFocus=false,savedAlarmTime=0,savedFartTime=0;
 let audioCtx, alarmAudio, fartAudio;
@@ -41,7 +122,7 @@ const isTouchDevice = window.matchMedia('(pointer: coarse)').matches || 'ontouch
 const cams=[cam1,cam2,cam3];
 function esc(v){return String(v||'').replace(/[&<>\"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));}
 function normalizeSimple(v){return String(v||'').toLowerCase().replace(/\s+/g,'').trim();}
-function normalizeNickname(v){return String(v||'').replace(/\s+/g,' ').trim().slice(0,18);}
+function normalizeNickname(v){return String(v||'').replace(/\s+/g,' ').trim().slice(0,16);}
 function setStatus(el,text='',type=''){el.textContent=text; el.className=text?`status ${type} show`:'status';}
 function showScreen(name){Object.values(screenMap).forEach(s=>s.classList.remove('active')); if(name!=='cameraFail') stopAlarm(); screenMap[name].classList.add('active'); if(name==='profile') loadProfile(); if(name==='publicProfile') loadPublicProfile(viewedNickname); if(name==='mode') updateUserBadges();}
 function updateUserBadges(){const nick=currentUser?.nickname||'—'; currentNickText.textContent=nick; profileNickText.textContent=nick; if(currentUser?.avatar){modeHero.innerHTML=`<img src="${currentUser.avatar}" alt="avatar">`; profileAvatarHero.innerHTML=`<img src="${currentUser.avatar}" alt="avatar">`;} else {modeHero.textContent='🎮'; profileAvatarHero.textContent='👤';}}
@@ -90,35 +171,26 @@ function buildProfileData(profileRow, attemptRows){
 }
 async function api(body, query=''){
   const action = body.action || '';
-  if(action === 'login'){
-    const hash = await sha256Hex(body.password || '');
-    const { data, error } = await supabaseClient.from('profiles').select('nickname, avatar_data').eq('password_hash', hash).maybeSingle();
-    if(error) throw new Error(error.message || 'Ошибка');
-    if(!data) throw new Error('Пароль не найден');
-    return { ok:true, user:{ nickname:data.nickname, password:hash, avatar:data.avatar_data || '' } };
-  }
   if(action === 'auth'){
     const nickname = normalizeNickname(body.nickname);
-    const rawPassword = String(body.password || '').trim();
-    if(nickname.length < 2) throw new Error('Ник должен быть хотя бы 2 символа.');
-    if(rawPassword.length < 4) throw new Error('Личный пароль должен быть не короче 4 символов.');
+    const rawPassword = String(body.password || '').slice(0,16);
+    if(!nickname) throw new Error('Введите ник.');
+    if(!rawPassword) throw new Error('Введите пароль.');
+    if(nickname.length > 16) throw new Error('Ник не должен быть длиннее 16 символов.');
+    if(rawPassword.length > 16) throw new Error('Пароль не должен быть длиннее 16 символов.');
     const hash = await sha256Hex(rawPassword);
     const { data: existingUser, error: e1 } = await supabaseClient.from('profiles').select('nickname, password_hash, avatar_data').eq('nickname', nickname).maybeSingle();
     if(e1) throw new Error(e1.message || 'Ошибка');
-    const { data: passwordOwner, error: e2 } = await supabaseClient.from('profiles').select('nickname').eq('password_hash', hash).maybeSingle();
-    if(e2 && !String(e2.message||'').toLowerCase().includes('multiple')) throw new Error(e2.message || 'Ошибка');
     if(existingUser){
-      if(existingUser.password_hash !== hash) throw new Error('Для этого ника нужен другой пароль');
-      return { ok:true, user:{ nickname, password:hash, avatar:existingUser.avatar_data || '' }, mode:'login' };
-    }
-    if(passwordOwner && passwordOwner.nickname !== nickname){
-      throw new Error('Такой пароль уже используется другим игроком');
+      if(existingUser.password_hash !== hash) throw new Error('Неверный пароль для этого ника');
+      return { ok:true, user:{ nickname:existingUser.nickname, password:hash, avatar:existingUser.avatar_data || '' }, mode:'login' };
     }
     const { error: e3 } = await supabaseClient.from('profiles').insert({ nickname, password_hash:hash, avatar_data:'' });
     if(e3) throw new Error(e3.message || 'Ошибка');
     return { ok:true, user:{ nickname, password:hash, avatar:'' }, mode:'register' };
   }
   if(action === 'submitAttempt'){
+
     const nickname = normalizeNickname(body.nickname);
     const passwordHash = String(body.password || '');
     const { data: user, error } = await supabaseClient.from('profiles').select('nickname').eq('nickname', nickname).eq('password_hash', passwordHash).maybeSingle();
@@ -200,9 +272,9 @@ async function apiGet(query){
 function randomPosition(){const areaRect=buttonArea.getBoundingClientRect(), btnRect=noBtn.getBoundingClientRect(); const maxX=Math.max(0,areaRect.width-btnRect.width), maxY=Math.max(0,areaRect.height-btnRect.height); noBtn.style.left=`${Math.random()*maxX}px`; noBtn.style.top=`${Math.random()*maxY}px`; teleportCount++; if(teleportCount%67===0){flash67.classList.add('show'); setTimeout(()=>flash67.classList.remove('show'),1000);}}
 yesBtn.onclick=()=>{wrongPasswordCount=0; passwordInput.value=''; setStatus(passwordStatus); showScreen('password'); setTimeout(()=>passwordInput.focus(),50);};
 if(isTouchDevice){noBtn.addEventListener('touchstart',e=>{e.preventDefault();randomPosition();},{passive:false}); noBtn.addEventListener('click',e=>{e.preventDefault();randomPosition();});} else {document.addEventListener('mousemove',e=>{if(!introScreen.classList.contains('active')) return; const rect=noBtn.getBoundingClientRect(); const cx=rect.left+rect.width/2, cy=rect.top+rect.height/2; if(Math.hypot(e.clientX-cx,e.clientY-cy)<110) randomPosition();}); noBtn.addEventListener('click',e=>{e.preventDefault();randomPosition();});}
-async function checkPassword(){const raw=passwordInput.value.trim(); const v=normalizeSimple(raw); if(!v) return; if(v===MASTER_PASSWORD){setStatus(passwordStatus); nicknameInput.value=currentUser?.nickname||''; personalPasswordInput.value=''; showScreen('auth'); return;} try{const data=await api({action:'login',password:raw}); currentUser=data.user; localStorage.setItem('skibidiCurrentUser',JSON.stringify(currentUser)); wrongPasswordCount=0; setStatus(passwordStatus); updateUserBadges(); showScreen('mode');}catch(err){wrongPasswordCount++; setStatus(passwordStatus,`неправильный пароль ${Math.min(wrongPasswordCount,3)}/3`,'bad'); if(wrongPasswordCount>=3){playAlarm(); showScreen('cameraFail');}}}
+async function checkPassword(){const raw=passwordInput.value.trim(); const v=normalizeSimple(raw); if(!v) return; if(v===MASTER_PASSWORD){setStatus(passwordStatus); nicknameInput.value=currentUser?.nickname||''; personalPasswordInput.value=''; showScreen('auth'); return;} wrongPasswordCount++; setStatus(passwordStatus,`неправильный пароль ${Math.min(wrongPasswordCount,3)}/3`,'bad'); if(wrongPasswordCount>=3){playAlarm(); showScreen('cameraFail');}}
 checkPasswordBtn.onclick=checkPassword; passwordInput.addEventListener('keydown',e=>{if(e.key==='Enter') checkPassword();}); passwordBackToIntroBtn.onclick=()=>showScreen('intro');
-async function continueAuth(){const nickname=normalizeNickname(nicknameInput.value), password=personalPasswordInput.value.trim(); if(nickname.length<2) return setStatus(authStatus,'Ник должен быть хотя бы 2 символа.','bad'); if(password.length<4) return setStatus(authStatus,'Личный пароль должен быть не короче 4 символов.','bad'); try{const data=await api({action:'auth',nickname,password}); currentUser=data.user; localStorage.setItem('skibidiCurrentUser',JSON.stringify(currentUser)); updateUserBadges(); setStatus(authStatus,data.mode==='register'?'Аккаунт создан. Пароль запомни.':'Успешный вход.','good'); setTimeout(()=>{setStatus(authStatus); showScreen('mode');},350);}catch(err){setStatus(authStatus,err.message,'bad');}}
+async function continueAuth(){const nickname=normalizeNickname(nicknameInput.value); const password=String(personalPasswordInput.value||'').slice(0,16); if(!nickname) return setStatus(authStatus,'Введите ник.','bad'); if(!password) return setStatus(authStatus,'Введите пароль.','bad'); if(nickname.length>16) return setStatus(authStatus,'Ник не должен быть длиннее 16 символов.','bad'); if(password.length>16) return setStatus(authStatus,'Пароль не должен быть длиннее 16 символов.','bad'); try{const data=await api({action:'auth',nickname,password}); currentUser=data.user; localStorage.setItem('skibidiCurrentUser',JSON.stringify(currentUser)); updateUserBadges(); setStatus(authStatus,data.mode==='register'?'Аккаунт создан.':'Успешный вход.','good'); setTimeout(()=>{setStatus(authStatus); showScreen('mode');},350);}catch(err){setStatus(authStatus,err.message,'bad');}}
 authContinueBtn.onclick=continueAuth; authBackBtn.onclick=()=>showScreen('password'); nicknameInput.addEventListener('keydown',e=>{if(e.key==='Enter') continueAuth();}); personalPasswordInput.addEventListener('keydown',e=>{if(e.key==='Enter') continueAuth();});
 function bestText(entry){return entry?`${Number(entry.timeSeconds).toFixed(1)} c`:'—';}
 function attemptsHtml(attempts){return '<div class="attemptRow leaderboardHead"><div>Режим</div><div>Итог</div><div>Время</div><div>Ошибки</div><div>Дата</div></div>'+(attempts.length?attempts.map(a=>`<div class="attemptRow"><div>${a.target}</div><div>${a.success?'победа':'какаха'}</div><div>${a.success?Number(a.timeSeconds).toFixed(1)+' c':'—'}</div><div>${a.cameraHits}</div><div>${new Date(a.createdAt).toLocaleDateString('ru-RU')}</div></div>`).join(''):'<div class="leaderboardEmpty">Попыток пока нет.</div>');}
