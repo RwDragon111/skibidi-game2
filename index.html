@@ -356,7 +356,7 @@ tbody tr:nth-child(odd){background:rgba(255,255,255,.04)}
     </div>
   </div>
 
-  <div class="overlay" id="setupOverlay">
+  <div class="overlay" id="setupOverlay" style="display:none">
     <div class="modal">
       <div class="close-line">
         <h2 style="margin:0">Подключение Supabase</h2>
@@ -385,6 +385,10 @@ tbody tr:nth-child(odd){background:rgba(255,255,255,.04)}
     supabaseAnon: 'skibidi_supabase_anon',
     currentUser: 'skibidi_current_user_v1'
   };
+
+  const EMBEDDED_SUPABASE_URL = 'https://bfnwqfoeqjqiktgehrtz.supabase.co';
+  const EMBEDDED_SUPABASE_ANON = 'sb_publishable_zgCq_-lIJ-a1nH6BhUA7Sw__8EpPene';
+
 
   const screens = {
     intro: document.getElementById('screenIntro'),
@@ -492,13 +496,19 @@ tbody tr:nth-child(odd){background:rgba(255,255,255,.04)}
   }
 
   async function initSupabase(){
-    const url = localStorage.getItem(STORAGE_KEYS.supabaseUrl) || '';
-    const key = localStorage.getItem(STORAGE_KEYS.supabaseAnon) || '';
-    if(!url || !key){ showSetup(); return false; }
+    const url = EMBEDDED_SUPABASE_URL || localStorage.getItem(STORAGE_KEYS.supabaseUrl) || '';
+    const key = EMBEDDED_SUPABASE_ANON || localStorage.getItem(STORAGE_KEYS.supabaseAnon) || '';
+    if(!url || !key){
+      showSetup('Нет настроек Supabase.');
+      return false;
+    }
     try{
+      localStorage.setItem(STORAGE_KEYS.supabaseUrl, url);
+      localStorage.setItem(STORAGE_KEYS.supabaseAnon, key);
       state.supabase = window.supabase.createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }});
       const { error } = await state.supabase.from('profiles').select('nickname', { count: 'exact', head: true });
       if(error) throw error;
+      closeOverlay(el.setupOverlay);
       return true;
     }catch(err){
       showSetup(`Не удалось подключиться: ${err.message || err}`);
@@ -508,9 +518,11 @@ tbody tr:nth-child(odd){background:rgba(255,255,255,.04)}
 
   function showSetup(message=''){
     el.supabaseSetupError.textContent = message;
-    el.supabaseUrlInput.value = localStorage.getItem(STORAGE_KEYS.supabaseUrl) || '';
-    el.supabaseKeyInput.value = localStorage.getItem(STORAGE_KEYS.supabaseAnon) || '';
-    openOverlay(el.setupOverlay);
+    el.supabaseUrlInput.value = EMBEDDED_SUPABASE_URL || localStorage.getItem(STORAGE_KEYS.supabaseUrl) || '';
+    el.supabaseKeyInput.value = EMBEDDED_SUPABASE_ANON || localStorage.getItem(STORAGE_KEYS.supabaseAnon) || '';
+    if(!EMBEDDED_SUPABASE_URL || !EMBEDDED_SUPABASE_ANON){
+      openOverlay(el.setupOverlay);
+    }
   }
 
   async function saveSetup(){
@@ -535,8 +547,8 @@ tbody tr:nth-child(odd){background:rgba(255,255,255,.04)}
     screens[name].classList.remove('hidden');
   }
 
-  function openOverlay(node){ node.classList.add('show'); }
-  function closeOverlay(node){ node.classList.remove('show'); }
+  function openOverlay(node){ node.style.display='flex'; node.classList.add('show'); }
+  function closeOverlay(node){ node.classList.remove('show'); if(node.id==='setupOverlay' && EMBEDDED_SUPABASE_URL && EMBEDDED_SUPABASE_ANON){ node.style.display='none'; } }
 
   function teleportIntroNo(){
     const area = el.introArea.getBoundingClientRect();
